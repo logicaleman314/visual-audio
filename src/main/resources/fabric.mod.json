@@ -3,9 +3,9 @@
 	"id": "visual-audio",
 	"version": "${version}",
 	"name": "Visual Audio",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Minecraft Sound Visualizer for Accessability",
 	"authors": [
-		"Me!"
+		"logicaleman"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
