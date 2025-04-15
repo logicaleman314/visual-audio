@@ -51,25 +51,38 @@ public class VisualAudioClient implements ClientModInitializer {
 			LOGGER.info("Listener Registered");
 		});
 		HudLayerRegistrationCallback.EVENT.register(layeredDrawer -> {
-			layeredDrawer.attachLayerBefore(IdentifiedLayer.CHAT, SOUND_LAYER, this::render);
+			layeredDrawer.attachLayerAfter(IdentifiedLayer.CROSSHAIR, SOUND_LAYER, this::render);
 		});
 	}
 
 	private void render(DrawContext context, RenderTickCounter tickCounter) {
 		if(client.world != null) {
-			int x = client.getWindow().getScaledWidth() / 2;
-			int y = 10;
+			int xCenter = client.getWindow().getScaledWidth() / 2;
+			int yCenter = client.getWindow().getScaledHeight() / 2;
+			float cameraYaw = client.getCameraEntity().getHeadYaw();
+			double cameraX = client.getCameraEntity().getX();
+			double cameraZ = client.getCameraEntity().getZ();
+			double wheelRadius = 100.0;
 			for(SoundEntry soundEntry : sounds) {
 				SoundInstance sound = soundEntry.sound();
 				long soundLife = Util.getMeasuringTimeMs() - soundEntry.time();
+				Vec3d soundLocation = soundEntry.location();
+				double soundX = soundLocation.getX();
+				double soundZ = soundLocation.getZ();
+				double relativeX = soundX - cameraX;
+				double relativeZ = soundZ - cameraZ;
+				double angleFromPositiveZ = Math.toDegrees(Math.atan2(relativeZ, -relativeX));
+				double angleFromCamera = ((angleFromPositiveZ - cameraYaw) % 360) - 180;
+				int x = (int) (xCenter + Math.sin(Math.toRadians(angleFromCamera+90)) * wheelRadius);
+				int y = (int) (yCenter + Math.cos(Math.toRadians(angleFromCamera+90)) * wheelRadius);
 				if(soundLife < 5000) {
-					context.drawText(client.textRenderer, sound.getId().toString(), x, y, 0xFFFFFFFF, false);
+					context.drawCenteredTextWithShadow(client.textRenderer, sound.getId().toString(), x, y, 0xFFFFFFFF);
 					y += 10;
 				}
 				else {
 					int alpha = (255 - (int) ((soundLife - 5000) / 5000.0f * 255.0f));
 					int color = ColorHelper.getArgb(alpha, 255, 255, 255);
-					context.drawText(client.textRenderer, sound.getId().toString(), x, y, color, false);
+					context.drawCenteredTextWithShadow(client.textRenderer, sound.getId().toString(), x, y, color);
 					y += 10;
 				}
 			}
