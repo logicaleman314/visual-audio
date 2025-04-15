@@ -62,7 +62,7 @@ public class VisualAudioClient implements ClientModInitializer {
 			float cameraYaw = client.getCameraEntity().getHeadYaw();
 			double cameraX = client.getCameraEntity().getX();
 			double cameraZ = client.getCameraEntity().getZ();
-			double wheelRadius = 100.0;
+			double wheelRadius = 150.0;
 			for(SoundEntry soundEntry : sounds) {
 				SoundInstance sound = soundEntry.sound();
 				long soundLife = Util.getMeasuringTimeMs() - soundEntry.time();
@@ -71,9 +71,9 @@ public class VisualAudioClient implements ClientModInitializer {
 				double soundZ = soundLocation.getZ();
 				double relativeX = soundX - cameraX;
 				double relativeZ = soundZ - cameraZ;
-				double angleFromPositiveZ = Math.toDegrees(Math.atan2(relativeZ, -relativeX));
-				double angleFromCamera = ((angleFromPositiveZ - cameraYaw) % 360) - 180;
-				int x = (int) (xCenter + Math.sin(Math.toRadians(angleFromCamera+90)) * wheelRadius);
+				double angleFromPositiveZ = Math.toDegrees(Math.atan2(relativeZ, relativeX));
+				double angleFromCamera = ((angleFromPositiveZ - cameraYaw));
+				int x = (int) (xCenter - Math.sin(Math.toRadians(angleFromCamera+90)) * wheelRadius);
 				int y = (int) (yCenter + Math.cos(Math.toRadians(angleFromCamera+90)) * wheelRadius);
 				if(soundLife < 5000) {
 					context.drawCenteredTextWithShadow(client.textRenderer, sound.getId().toString(), x, y, 0xFFFFFFFF);
